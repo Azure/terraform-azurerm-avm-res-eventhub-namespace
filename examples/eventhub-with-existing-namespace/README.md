@@ -1,7 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
 # Default example
 
-This deploys the module in its simplest form.
+This deploys an event hub into an existing event hub namespace.
 
 ```hcl
 terraform {
@@ -28,16 +28,38 @@ module "naming" {
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
   name     = module.naming.resource_group.name_unique
-  location = "AustraliaEast"
+  location = "australiaeast"
+}
+
+resource "azurerm_eventhub_namespace" "this" {
+  name                = module.naming.eventhub.name_unique
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+  sku                 = "Standard"
+}
+
+locals {
+  event_hubs = {
+    event_hub_existing_namespace = {
+      namespace_name      = module.event_hub.resource.id
+      partition_count     = 2
+      message_retention   = 3
+      resource_group_name = module.event_hub.resource.name
+    }
+    # Add more event hubs if needed
+  }
 }
 
 module "event_hub" {
   source = "../../"
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
-  enable_telemetry    = false
-  name                = module.naming.eventhub_namespace.name_unique
-  resource_group_name = azurerm_resource_group.this.name
+  enable_telemetry         = false
+  existing_parent_resource = { name = azurerm_eventhub_namespace.this.name }
+  name                     = module.naming.eventhub_namespace.name_unique
+  resource_group_name      = azurerm_resource_group.this.name
+
+  event_hubs = local.event_hubs
 }
 ```
 
@@ -60,6 +82,7 @@ The following providers are used by this module:
 
 The following resources are used by this module:
 
+- [azurerm_eventhub_namespace.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/eventhub_namespace) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 
 <!-- markdownlint-disable MD013 -->
