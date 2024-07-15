@@ -27,13 +27,13 @@ module "naming" {
 
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
-  name     = module.naming.resource_group.name_unique
   location = "australiaeast"
+  name     = module.naming.resource_group.name_unique
 }
 
 resource "azurerm_eventhub_namespace" "this" {
-  name                = module.naming.eventhub.name_unique
   location            = azurerm_resource_group.this.location
+  name                = module.naming.eventhub.name_unique
   resource_group_name = azurerm_resource_group.this.name
   sku                 = "Standard"
 }
