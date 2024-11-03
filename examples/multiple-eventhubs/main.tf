@@ -31,19 +31,19 @@ module "naming" {
 
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
-  name     = module.naming.resource_group.name_unique
   location = "australiaeast"
+  name     = module.naming.resource_group.name_unique
 }
 
 # Get the current client details of the principal running terraform, used to apply RBAC permissions
 data "azurerm_client_config" "this" {}
 
 resource "azurerm_storage_account" "this" {
+  account_replication_type = "LRS"
+  account_tier             = "Standard"
+  location                 = azurerm_resource_group.this.location
   name                     = module.naming.storage_account.name_unique
   resource_group_name      = azurerm_resource_group.this.name
-  location                 = azurerm_resource_group.this.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
 }
 
 resource "azurerm_storage_container" "this" {
