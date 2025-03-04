@@ -4,6 +4,7 @@
 output "resource" {
   value       = try(azurerm_eventhub_namespace.this[0], data.azurerm_eventhub_namespace.this[0])
   description = "This is the full output for the resource."
+  sensitive = true
 }
 
 output "private_endpoints" {
