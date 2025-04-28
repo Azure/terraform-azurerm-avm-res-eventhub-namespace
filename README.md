@@ -419,14 +419,6 @@ Type: `map(any)`
 
 Default: `{}`
 
-### <a name="input_zone_redundant"></a> [zone\_redundant](#input\_zone\_redundant)
-
-Description: Specifies if the EventHub Namespace should be Zone Redundant (created across Availability Zones). Changing this forces a new resource to be created. Defaults to `true`.
-
-Type: `bool`
-
-Default: `true`
-
 ## Outputs
 
 The following outputs are exported:

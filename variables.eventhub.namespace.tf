@@ -41,12 +41,6 @@ variable "maximum_throughput_units" {
   }
 }
 
-variable "zone_redundant" {
-  description = "Specifies if the EventHub Namespace should be Zone Redundant (created across Availability Zones). Changing this forces a new resource to be created. Defaults to `true`."
-  type        = bool
-  default     = true
-}
-
 variable "local_authentication_enabled" {
   description = "Is SAS authentication enabled for the EventHub Namespace?.  Defaults to `false`."
   type        = bool
