@@ -52,6 +52,6 @@ module "event_hub" {
   existing_parent_resource = { name = azurerm_eventhub_namespace.this.name }
   name                     = module.naming.eventhub_namespace.name_unique
   resource_group_name      = azurerm_resource_group.this.name
-
-  event_hubs = local.event_hubs
+  location                 = azurerm_resource_group.this.location
+  event_hubs               = local.event_hubs
 }

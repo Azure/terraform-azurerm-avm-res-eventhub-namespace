@@ -45,7 +45,7 @@ resource "azurerm_resource_group" "this" {
 data "azurerm_client_config" "this" {}
 
 resource "azurerm_storage_account" "this" {
-  account_replication_type = "LRS"
+  account_replication_type = "ZRS"
   account_tier             = "Standard"
   location                 = azurerm_resource_group.this.location
   name                     = module.naming.storage_account.name_unique
@@ -93,8 +93,8 @@ module "event_hub" {
   enable_telemetry    = var.enable_telemetry
   name                = module.naming.eventhub_namespace.name_unique
   resource_group_name = azurerm_resource_group.this.name
-
-  event_hubs = local.event_hubs
+  location            = azurerm_resource_group.this.location
+  event_hubs          = local.event_hubs
 
   depends_on = [
     azurerm_role_assignment.this
