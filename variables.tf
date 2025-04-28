@@ -31,9 +31,13 @@ variable "customer_managed_key" {
       resource_id = string
     }), null)
   })
-  default = null
+  default     = null
+  description = <<DESCRIPTION
+  Customer Managed Key.
+  DESCRIPTION
 }
 
+# tflint-ignore: terraform_unused_declarations
 variable "diagnostic_settings" {
   type = map(object({
     name                                     = optional(string, null)
