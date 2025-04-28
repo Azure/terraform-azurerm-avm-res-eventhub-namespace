@@ -26,7 +26,6 @@ resource "azurerm_eventhub_namespace" "this" {
   minimum_tls_version           = 1.2
   public_network_access_enabled = var.public_network_access_enabled
   tags                          = var.tags
-  zone_redundant                = var.zone_redundant
 
   dynamic "identity" {
     for_each = var.managed_identities != {} ? { this = var.managed_identities } : {}
