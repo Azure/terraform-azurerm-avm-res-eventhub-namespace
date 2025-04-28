@@ -3,7 +3,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.7.0, < 4.0.0"
+      version = "~> 4.0"
     }
   }
 }
@@ -21,13 +21,13 @@ module "naming" {
 
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
-  name     = module.naming.resource_group.name_unique
   location = "australiaeast"
+  name     = module.naming.resource_group.name_unique
 }
 
 resource "azurerm_eventhub_namespace" "this" {
-  name                = module.naming.eventhub.name_unique
   location            = azurerm_resource_group.this.location
+  name                = module.naming.eventhub.name_unique
   resource_group_name = azurerm_resource_group.this.name
   sku                 = "Standard"
 }
@@ -52,6 +52,6 @@ module "event_hub" {
   existing_parent_resource = { name = azurerm_eventhub_namespace.this.name }
   name                     = module.naming.eventhub_namespace.name_unique
   resource_group_name      = azurerm_resource_group.this.name
-
-  event_hubs = local.event_hubs
+  location                 = azurerm_resource_group.this.location
+  event_hubs               = local.event_hubs
 }

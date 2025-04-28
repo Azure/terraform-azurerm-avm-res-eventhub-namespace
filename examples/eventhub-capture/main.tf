@@ -3,7 +3,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.7.0, < 4.0.0"
+      version = "~> 4.0"
     }
   }
 }
@@ -31,25 +31,25 @@ module "naming" {
 
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
-  name     = module.naming.resource_group.name_unique
   location = "australiaeast"
+  name     = module.naming.resource_group.name_unique
 }
 
 # Get the current client details of the principal running terraform, used to apply RBAC permissions
 data "azurerm_client_config" "this" {}
 
 resource "azurerm_storage_account" "this" {
+  account_replication_type = "ZRS"
+  account_tier             = "Standard"
+  location                 = azurerm_resource_group.this.location
   name                     = module.naming.storage_account.name_unique
   resource_group_name      = azurerm_resource_group.this.name
-  location                 = azurerm_resource_group.this.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
 }
 
 resource "azurerm_storage_container" "this" {
   name                  = "capture"
-  storage_account_name  = azurerm_storage_account.this.name
   container_access_type = "private"
+  storage_account_name  = azurerm_storage_account.this.name
 }
 
 resource "azurerm_role_assignment" "this" {
@@ -87,8 +87,8 @@ module "event_hub" {
   enable_telemetry    = var.enable_telemetry
   name                = module.naming.eventhub_namespace.name_unique
   resource_group_name = azurerm_resource_group.this.name
-
-  event_hubs = local.event_hubs
+  location            = azurerm_resource_group.this.location
+  event_hubs          = local.event_hubs
 
   depends_on = [
     azurerm_role_assignment.this
