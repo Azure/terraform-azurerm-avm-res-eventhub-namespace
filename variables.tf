@@ -1,11 +1,11 @@
-variable "enable_telemetry" {
-  type        = bool
-  default     = true
-  description = <<DESCRIPTION
-This variable controls whether or not telemetry is enabled for the module.
-For more information see <https://aka.ms/avm/telemetryinfo>.
-If it is set to false, then no telemetry will be collected.
-DESCRIPTION
+variable "name" {
+  type        = string
+  description = "The name of the this resource."
+
+  validation {
+    condition     = can(regex("[a-zA-Z][a-zA-Z0-9-]{0,48}[a-zA-Z0-9]$", var.name))
+    error_message = "The name must be be between 2 and 50 characters, alphanumeric and hyphens.  The name must start with a letter, and may not start or end with a hyphen."
+  }
 }
 
 # This is required for most resource modules
@@ -14,28 +14,6 @@ variable "resource_group_name" {
   description = "The resource group where the resources will be deployed."
 }
 
-variable "location" {
-  type        = string
-  description = "Azure region where the resource should be deployed.  If null, the location will be inferred from the resource group location."
-  default     = null
-}
-
-variable "name" {
-  type        = string
-  description = "The name of the this resource."
-  validation {
-    condition     = can(regex("[a-zA-Z][a-zA-Z0-9-]{0,48}[a-zA-Z0-9]$", var.name))
-    error_message = "The name must be be between 2 and 50 characters, alphanumeric and hyphens.  The name must start with a letter, and may not start or end with a hyphen."
-  }
-}
-
-variable "existing_parent_resource" {
-  description = "If supplied, this event hub namespace resource will be used by child resources (e.g. event hubs), instead of creating a new event hub namespace."
-  type = object({
-    name = string
-  })
-  default = null
-}
 # required AVM interfaces
 # remove only if not supported by the resource
 # tflint-ignore: terraform_unused_declarations
@@ -46,8 +24,8 @@ variable "customer_managed_key" {
     key_version                        = optional(string, null)
     user_assigned_identity_resource_id = optional(string, null)
   })
-  description = "Customer managed keys that should be associated with the resource."
   default     = {}
+  description = "Customer managed keys that should be associated with the resource."
 }
 
 variable "diagnostic_settings" {
@@ -63,22 +41,7 @@ variable "diagnostic_settings" {
     event_hub_name                           = optional(string, null)
     marketplace_partner_resource_id          = optional(string, null)
   }))
-  default  = {}
-  nullable = false
-
-  validation {
-    condition     = alltrue([for _, v in var.diagnostic_settings : contains(["Dedicated", "AzureDiagnostics"], v.log_analytics_destination_type)])
-    error_message = "Log analytics destination type must be one of: 'Dedicated', 'AzureDiagnostics'."
-  }
-  validation {
-    condition = alltrue(
-      [
-        for _, v in var.diagnostic_settings :
-        v.workspace_resource_id != null || v.storage_account_resource_id != null || v.event_hub_authorization_rule_resource_id != null || v.marketplace_partner_resource_id != null
-      ]
-    )
-    error_message = "At least one of `workspace_resource_id`, `storage_account_resource_id`, `marketplace_partner_resource_id`, or `event_hub_authorization_rule_resource_id`, must be set."
-  }
+  default     = {}
   description = <<DESCRIPTION
 A map of diagnostic settings to create on the Key Vault. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
 
@@ -93,6 +56,45 @@ A map of diagnostic settings to create on the Key Vault. The map key is delibera
 - `event_hub_name` - (Optional) The name of the event hub. If none is specified, the default event hub will be selected.
 - `marketplace_partner_resource_id` - (Optional) The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic LogsLogs.
 DESCRIPTION
+  nullable    = false
+
+  validation {
+    condition     = alltrue([for _, v in var.diagnostic_settings : contains(["Dedicated", "AzureDiagnostics"], v.log_analytics_destination_type)])
+    error_message = "Log analytics destination type must be one of: 'Dedicated', 'AzureDiagnostics'."
+  }
+  validation {
+    condition = alltrue(
+      [
+        for _, v in var.diagnostic_settings :
+        v.workspace_resource_id != null || v.storage_account_resource_id != null || v.event_hub_authorization_rule_resource_id != null || v.marketplace_partner_resource_id != null
+      ]
+    )
+    error_message = "At least one of `workspace_resource_id`, `storage_account_resource_id`, `marketplace_partner_resource_id`, or `event_hub_authorization_rule_resource_id`, must be set."
+  }
+}
+
+variable "enable_telemetry" {
+  type        = bool
+  default     = true
+  description = <<DESCRIPTION
+This variable controls whether or not telemetry is enabled for the module.
+For more information see <https://aka.ms/avm/telemetryinfo>.
+If it is set to false, then no telemetry will be collected.
+DESCRIPTION
+}
+
+variable "existing_parent_resource" {
+  type = object({
+    name = string
+  })
+  default     = null
+  description = "If supplied, this event hub namespace resource will be used by child resources (e.g. event hubs), instead of creating a new event hub namespace."
+}
+
+variable "location" {
+  type        = string
+  default     = null
+  description = "Azure region where the resource should be deployed.  If null, the location will be inferred from the resource group location."
 }
 
 variable "lock" {
@@ -100,9 +102,10 @@ variable "lock" {
     name = optional(string, null)
     kind = optional(string, "None")
   })
-  description = "The lock level to apply. Default is `None`. Possible values are `None`, `CanNotDelete`, and `ReadOnly`."
   default     = {}
+  description = "The lock level to apply. Default is `None`. Possible values are `None`, `CanNotDelete`, and `ReadOnly`."
   nullable    = false
+
   validation {
     condition     = contains(["CanNotDelete", "ReadOnly", "None"], var.lock.kind)
     error_message = "The lock level must be one of: 'None', 'CanNotDelete', or 'ReadOnly'."
@@ -115,8 +118,8 @@ variable "managed_identities" {
     system_assigned            = optional(bool, false)
     user_assigned_resource_ids = optional(set(string), [])
   })
-  description = "Managed identities to be created for the resource."
   default     = {}
+  description = "Managed identities to be created for the resource."
 }
 
 variable "private_endpoints" {
@@ -199,7 +202,6 @@ DESCRIPTION
 # tflint-ignore: terraform_unused_declarations
 variable "tags" {
   type        = map(any)
-  description = "The map of tags to be applied to the resource"
   default     = {}
+  description = "The map of tags to be applied to the resource"
 }
-

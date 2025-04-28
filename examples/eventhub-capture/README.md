@@ -37,25 +37,25 @@ module "naming" {
 
 # This is required for resource modules
 resource "azurerm_resource_group" "this" {
-  name     = module.naming.resource_group.name_unique
   location = "australiaeast"
+  name     = module.naming.resource_group.name_unique
 }
 
 # Get the current client details of the principal running terraform, used to apply RBAC permissions
 data "azurerm_client_config" "this" {}
 
 resource "azurerm_storage_account" "this" {
+  account_replication_type = "LRS"
+  account_tier             = "Standard"
+  location                 = azurerm_resource_group.this.location
   name                     = module.naming.storage_account.name_unique
   resource_group_name      = azurerm_resource_group.this.name
-  location                 = azurerm_resource_group.this.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
 }
 
 resource "azurerm_storage_container" "this" {
   name                  = "capture"
-  storage_account_name  = azurerm_storage_account.this.name
   container_access_type = "private"
+  storage_account_name  = azurerm_storage_account.this.name
 }
 
 resource "azurerm_role_assignment" "this" {
@@ -110,12 +110,6 @@ The following requirements are needed by this module:
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (>= 3.7.0, < 4.0.0)
-
-## Providers
-
-The following providers are used by this module:
-
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (>= 3.7.0, < 4.0.0)
 
 ## Resources
 
