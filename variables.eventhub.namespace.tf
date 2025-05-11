@@ -1,56 +1,40 @@
-variable "sku" {
-  description = "Defines which tier to use for the Event Hub Namespace. Valid options are Basic, Standard, and Premium."
-  type        = string
-  default     = "Standard" # You can set a default value or leave it blank depending on your requirements
-  validation {
-    condition     = contains(["Basic", "Standard", "Premium"], var.sku)
-    error_message = "The default_action value must be either `Basic`, `Standard`, or `Premium`."
-  }
+variable "auto_inflate_enabled" {
+  type        = bool
+  default     = false
+  description = "Is Auto Inflate enabled for the EventHub Namespace?"
 }
 
 variable "capacity" {
+  type        = number
+  default     = 1
   description = <<DESCRIPTION
 Specifies the Capacity / Throughput Units for a Standard SKU namespace.
 Default capacity has a maximum of 2, but can be increased in blocks of 2 on a committed purchase basis.
 Defaults to 1.
 DESCRIPTION
-  type        = number
-  default     = 1
-}
-
-variable "auto_inflate_enabled" {
-  description = "Is Auto Inflate enabled for the EventHub Namespace?"
-  type        = bool
-  default     = false
 }
 
 variable "dedicated_cluster_id" {
-  description = "Specifies the ID of the EventHub Dedicated Cluster where this Namespace should be created.  Changing this forces a new resource to be created."
   type        = string
   default     = null
+  description = "Specifies the ID of the EventHub Dedicated Cluster where this Namespace should be created.  Changing this forces a new resource to be created."
+}
+
+variable "local_authentication_enabled" {
+  type        = bool
+  default     = false
+  description = "Is SAS authentication enabled for the EventHub Namespace?.  Defaults to `false`."
 }
 
 variable "maximum_throughput_units" {
-  description = "Specifies the maximum number of throughput units when Auto Inflate is Enabled. Valid values range from 1 - 20."
   type        = number
   default     = null
+  description = "Specifies the maximum number of throughput units when Auto Inflate is Enabled. Valid values range from 1 - 20."
 
   validation {
     condition     = var.maximum_throughput_units == null ? true : var.maximum_throughput_units < 1 || var.maximum_throughput_units > 20
     error_message = "Maximum throughput units must be in the range of 1 to 20"
   }
-}
-
-variable "local_authentication_enabled" {
-  description = "Is SAS authentication enabled for the EventHub Namespace?.  Defaults to `false`."
-  type        = bool
-  default     = false
-}
-
-variable "public_network_access_enabled" {
-  description = "Is public network access enabled for the EventHub Namespace?  Defaults to `false`."
-  type        = bool
-  default     = false
 }
 
 variable "network_rulesets" {
@@ -69,11 +53,7 @@ variable "network_rulesets" {
       subnet_id                                       = string
     })), [])
   })
-  default = null
-  validation {
-    condition     = var.network_rulesets == null ? true : contains(["Allow", "Deny"], var.network_rulesets.default_action)
-    error_message = "The default_action value must be either `Allow` or `Deny`."
-  }
+  default     = null
   description = <<DESCRIPTION
 The network rule set configuration for the resource.
 Requires Premium SKU.
@@ -87,4 +67,26 @@ Requires Premium SKU.
   - `subnet_id` - The subnet id from which requests will match the rule.
 
 DESCRIPTION
+
+  validation {
+    condition     = var.network_rulesets == null ? true : contains(["Allow", "Deny"], var.network_rulesets.default_action)
+    error_message = "The default_action value must be either `Allow` or `Deny`."
+  }
+}
+
+variable "public_network_access_enabled" {
+  type        = bool
+  default     = false
+  description = "Is public network access enabled for the EventHub Namespace?  Defaults to `false`."
+}
+
+variable "sku" {
+  type        = string
+  default     = "Standard" # You can set a default value or leave it blank depending on your requirements
+  description = "Defines which tier to use for the Event Hub Namespace. Valid options are Basic, Standard, and Premium."
+
+  validation {
+    condition     = contains(["Basic", "Standard", "Premium"], var.sku)
+    error_message = "The default_action value must be either `Basic`, `Standard`, or `Premium`."
+  }
 }
