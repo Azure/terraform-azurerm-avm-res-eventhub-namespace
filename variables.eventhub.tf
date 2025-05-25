@@ -28,53 +28,7 @@ variable "event_hubs" {
       delegated_managed_identity_resource_id = optional(string, null)
     })), {})
   }))
-  default = {}
-
-  validation {
-    condition = can([
-      for event_hub, config in var.event_hubs : (
-        config.capture_description == null ? true : contains(["Avro", "AvroDeflate"], config.capture_description.encoding)
-      )
-    ])
-    error_message = "Invalid encoding value for Event Hub capture encoding. Allowed values are Avro and AvroDeflate."
-  }
-
-  validation {
-    condition = can([
-      for event_hub, config in var.event_hubs : (
-        config.capture_description == null ? true : config.capture_description.size_limit_in_bytes == null ? true : config.capture_description.size_limit_in_bytes >= 314572800 && config.capture_description.size_limit_in_bytes <= 524288000
-      )
-    ])
-    error_message = "Invalid size_limit_in_bytes value.  If specified, it must be between 10485760 and 524288000 bytes."
-  }
-
-  validation {
-    condition = can([
-      for event_hub, config in var.event_hubs : (
-        config.capture_description == null ? true : config.capture_description.interval_in_seconds == null ? true : config.capture_description.interval_in_seconds <= 900 && config.capture_description.interval_in_seconds >= 60
-      )
-    ])
-    error_message = "Invalid interval_in_seconds value.  If specified, it must be between 60 and 900 seconds."
-  }
-
-  validation {
-    condition = can([
-      for event_hub, config in var.event_hubs : (
-        config.capture_description == null ? true : config.capture_description.destination.name == null ? true : config.capture_description.destination.name == "EventHubArchive.AzureBlockBlob"
-      )
-    ])
-    error_message = "Invalid capture destination. At this time, only EventHubArchive.AzureBlockBlob is supported."
-  }
-
-  validation {
-    condition = can([
-      for event_hub, config in var.event_hubs : (
-        config.status == null ? true : contains(["Active", "Disabled", "SendDisabled"], config.status)
-      )
-    ])
-    error_message = "Invalid status value. If supplied, possible values are Active, Disabled, and SendDisabled."
-  }
-
+  default     = {}
   description = <<DESCRIPTION
 Map of Azure Event Hubs configurations.
 
@@ -100,4 +54,45 @@ Map of Azure Event Hubs configurations.
 - `status` - (Optional) Specifies the status of the Event Hub resource. Possible values are Active, Disabled, and SendDisabled. Defaults to Active.
 - `role_assignments` - (Optional) RBAC permissions applied to the event hub resource.
 DESCRIPTION 
+
+  validation {
+    condition = can([
+      for event_hub, config in var.event_hubs : (
+        config.capture_description == null ? true : contains(["Avro", "AvroDeflate"], config.capture_description.encoding)
+      )
+    ])
+    error_message = "Invalid encoding value for Event Hub capture encoding. Allowed values are Avro and AvroDeflate."
+  }
+  validation {
+    condition = can([
+      for event_hub, config in var.event_hubs : (
+        config.capture_description == null ? true : config.capture_description.size_limit_in_bytes == null ? true : config.capture_description.size_limit_in_bytes >= 314572800 && config.capture_description.size_limit_in_bytes <= 524288000
+      )
+    ])
+    error_message = "Invalid size_limit_in_bytes value.  If specified, it must be between 10485760 and 524288000 bytes."
+  }
+  validation {
+    condition = can([
+      for event_hub, config in var.event_hubs : (
+        config.capture_description == null ? true : config.capture_description.interval_in_seconds == null ? true : config.capture_description.interval_in_seconds <= 900 && config.capture_description.interval_in_seconds >= 60
+      )
+    ])
+    error_message = "Invalid interval_in_seconds value.  If specified, it must be between 60 and 900 seconds."
+  }
+  validation {
+    condition = can([
+      for event_hub, config in var.event_hubs : (
+        config.capture_description == null ? true : config.capture_description.destination.name == null ? true : config.capture_description.destination.name == "EventHubArchive.AzureBlockBlob"
+      )
+    ])
+    error_message = "Invalid capture destination. At this time, only EventHubArchive.AzureBlockBlob is supported."
+  }
+  validation {
+    condition = can([
+      for event_hub, config in var.event_hubs : (
+        config.status == null ? true : contains(["Active", "Disabled", "SendDisabled"], config.status)
+      )
+    ])
+    error_message = "Invalid status value. If supplied, possible values are Active, Disabled, and SendDisabled."
+  }
 }
