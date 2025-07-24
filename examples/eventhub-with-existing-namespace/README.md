@@ -6,6 +6,7 @@ This deploys an event hub into an existing event hub namespace.
 ```hcl
 terraform {
   required_version = ">= 1.3.0"
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -52,14 +53,15 @@ locals {
 
 module "event_hub" {
   source = "../../"
+
+  location            = azurerm_resource_group.this.location
+  name                = module.naming.eventhub_namespace.name_unique
+  resource_group_name = azurerm_resource_group.this.name
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
   enable_telemetry         = false
-  existing_parent_resource = { name = azurerm_eventhub_namespace.this.name }
-  name                     = module.naming.eventhub_namespace.name_unique
-  resource_group_name      = azurerm_resource_group.this.name
-  location                 = azurerm_resource_group.this.location
   event_hubs               = local.event_hubs
+  existing_parent_resource = { name = azurerm_eventhub_namespace.this.name }
 }
 ```
 
