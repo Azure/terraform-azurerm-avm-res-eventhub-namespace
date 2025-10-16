@@ -74,7 +74,7 @@ Description: Is Auto Inflate enabled for the EventHub Namespace?
 
 Type: `bool`
 
-Default: `false`
+Default: `true`
 
 ### <a name="input_capacity"></a> [capacity](#input\_capacity)
 

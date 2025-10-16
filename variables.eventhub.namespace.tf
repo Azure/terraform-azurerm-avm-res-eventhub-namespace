@@ -1,6 +1,6 @@
 variable "auto_inflate_enabled" {
   type        = bool
-  default     = false
+  default     = true
   description = "Is Auto Inflate enabled for the EventHub Namespace?"
 }
 
