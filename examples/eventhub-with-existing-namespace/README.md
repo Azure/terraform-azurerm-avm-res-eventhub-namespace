@@ -64,6 +64,7 @@ module "event_hub" {
   enable_telemetry         = false
   event_hubs               = local.event_hubs
   existing_parent_resource = { name = azurerm_eventhub_namespace.this.name }
+  maximum_throughput_units = 1
 }
 ```
 
