@@ -29,11 +29,11 @@ variable "local_authentication_enabled" {
 variable "maximum_throughput_units" {
   type        = number
   default     = null
-  description = "Specifies the maximum number of throughput units when Auto Inflate is Enabled. Valid values range from 1 - 20."
+  description = "Specifies the maximum number of throughput units when Auto Inflate is Enabled. Valid values range from 1 - 40. When auto_inflate_enabled is true, this will default to max(2, capacity + 1) if not specified."
 
   validation {
-    condition     = var.maximum_throughput_units == null ? true : var.maximum_throughput_units >= 1 && var.maximum_throughput_units <= 20
-    error_message = "Maximum throughput units must be in the range of 1 to 20"
+    condition     = var.maximum_throughput_units == null ? true : var.maximum_throughput_units >= 1 && var.maximum_throughput_units <= 40
+    error_message = "Maximum throughput units must be in the range of 1 to 40"
   }
 }
 

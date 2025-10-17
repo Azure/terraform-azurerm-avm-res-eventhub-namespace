@@ -22,7 +22,7 @@ resource "azurerm_eventhub_namespace" "this" {
   capacity                      = var.capacity
   dedicated_cluster_id          = var.dedicated_cluster_id
   local_authentication_enabled  = var.local_authentication_enabled
-  maximum_throughput_units      = var.maximum_throughput_units
+  maximum_throughput_units      = var.auto_inflate_enabled && var.maximum_throughput_units == null ? max(2, var.capacity + 1) : var.maximum_throughput_units
   minimum_tls_version           = 1.2
   public_network_access_enabled = var.public_network_access_enabled
   tags                          = var.tags
@@ -64,8 +64,12 @@ resource "azurerm_eventhub_namespace" "this" {
 
   lifecycle {
     precondition {
+      condition     = !var.auto_inflate_enabled || (var.auto_inflate_enabled && (var.maximum_throughput_units == null || var.maximum_throughput_units > var.capacity))
+      error_message = "When auto_inflate_enabled is true, maximum_throughput_units must be greater than capacity (${var.capacity})."
+    }
+    precondition {
       condition     = var.maximum_throughput_units == null || var.auto_inflate_enabled
-      error_message = "Cannot set MaximumThroughputUnits property if AutoInflate is not enabled."
+      error_message = "Cannot set maximum_throughput_units if auto_inflate_enabled is not true."
     }
   }
 }
