@@ -39,7 +39,7 @@ module "event_hub" {
   location             = azurerm_resource_group.this.location
   name                 = module.naming.eventhub_namespace.name_unique
   resource_group_name  = azurerm_resource_group.this.name
-  auto_inflate_enabled = false
+  auto_inflate_enabled = true
   enable_telemetry     = false
 }
 ```
