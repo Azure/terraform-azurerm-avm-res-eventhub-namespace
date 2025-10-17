@@ -17,8 +17,13 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
   skip_provider_registration = true
+  storage_use_azuread        = true
 }
 
 
@@ -38,11 +43,14 @@ resource "azurerm_resource_group" "this" {
 data "azurerm_client_config" "this" {}
 
 resource "azurerm_storage_account" "this" {
-  account_replication_type = "ZRS"
-  account_tier             = "Standard"
-  location                 = azurerm_resource_group.this.location
-  name                     = module.naming.storage_account.name_unique
-  resource_group_name      = azurerm_resource_group.this.name
+  account_replication_type        = "ZRS"
+  account_tier                    = "Standard"
+  location                        = azurerm_resource_group.this.location
+  name                            = module.naming.storage_account.name_unique
+  resource_group_name             = azurerm_resource_group.this.name
+  allow_nested_items_to_be_public = false
+  default_to_oauth_authentication = true
+  shared_access_key_enabled       = false
 }
 
 resource "azurerm_storage_container" "this" {
