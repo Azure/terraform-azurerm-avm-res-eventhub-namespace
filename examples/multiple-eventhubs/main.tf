@@ -103,7 +103,19 @@ module "event_hub" {
   enable_telemetry = var.enable_telemetry
   event_hubs       = local.event_hubs
 
+  # Enable system-assigned managed identity for Event Hub capture to storage
+  managed_identities = {
+    system_assigned = true
+  }
+
   depends_on = [
     azurerm_role_assignment.this
   ]
+}
+
+# Grant the Event Hub namespace's managed identity access to write to the storage account
+resource "azurerm_role_assignment" "eventhub_to_storage" {
+  scope                = azurerm_storage_account.this.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = module.event_hub.resource.identity[0].principal_id
 }
