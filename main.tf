@@ -28,7 +28,7 @@ resource "azurerm_eventhub_namespace" "this" {
   tags                          = var.tags
 
   dynamic "identity" {
-    for_each = var.managed_identities != null ? { this = var.managed_identities } : {}
+    for_each = local.managed_identities
 
     content {
       type         = identity.value.system_assigned && length(identity.value.user_assigned_resource_ids) > 0 ? "SystemAssigned, UserAssigned" : length(identity.value.user_assigned_resource_ids) > 0 ? "UserAssigned" : "SystemAssigned"

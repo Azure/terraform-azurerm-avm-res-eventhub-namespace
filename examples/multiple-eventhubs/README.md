@@ -18,7 +18,7 @@ terraform {
 
 provider "azurerm" {
   features {}
-  skip_provider_registration = true
+  resource_provider_registrations = "none"
 }
 
 
@@ -48,7 +48,7 @@ resource "azurerm_storage_account" "this" {
 resource "azurerm_storage_container" "this" {
   name                  = "capture"
   container_access_type = "private"
-  storage_account_name  = azurerm_storage_account.this.name
+  storage_account_id    = azurerm_storage_account.this.id
 }
 
 resource "azurerm_role_assignment" "this" {
