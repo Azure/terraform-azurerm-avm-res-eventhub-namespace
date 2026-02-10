@@ -8,6 +8,14 @@ locals {
       }
     ]
   ]) : "${ra.event_hub_key}-${ra.ra_key}" => ra }
+  # Managed identities local that properly handles the 'no identity' scenario.
+  # When managed_identities is {} (the default), Terraform expands it to
+  # {system_assigned = false, user_assigned_resource_ids = []} due to optional
+  # attribute defaults. We detect this and return an empty map so the dynamic
+  # identity block is not created.
+  managed_identities = (
+    !var.managed_identities.system_assigned && length(var.managed_identities.user_assigned_resource_ids) == 0
+  ) ? {} : { this = var.managed_identities }
   # Private endpoint application security group associations
   # Remove if this resource does not support private endpoints
   private_endpoint_application_security_group_associations = { for assoc in flatten([

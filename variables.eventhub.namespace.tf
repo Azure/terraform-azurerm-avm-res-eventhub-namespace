@@ -1,6 +1,6 @@
 variable "auto_inflate_enabled" {
   type        = bool
-  default     = false
+  default     = true
   description = "Is Auto Inflate enabled for the EventHub Namespace?"
 }
 
@@ -28,11 +28,11 @@ variable "local_authentication_enabled" {
 
 variable "maximum_throughput_units" {
   type        = number
-  default     = null
+  default     = 1
   description = "Specifies the maximum number of throughput units when Auto Inflate is Enabled. Valid values range from 1 - 20."
 
   validation {
-    condition     = var.maximum_throughput_units == null ? true : var.maximum_throughput_units < 1 || var.maximum_throughput_units > 20
+    condition     = var.maximum_throughput_units >= 1 && var.maximum_throughput_units <= 20
     error_message = "Maximum throughput units must be in the range of 1 to 20"
   }
 }

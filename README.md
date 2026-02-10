@@ -74,7 +74,7 @@ Description: Is Auto Inflate enabled for the EventHub Namespace?
 
 Type: `bool`
 
-Default: `false`
+Default: `true`
 
 ### <a name="input_capacity"></a> [capacity](#input\_capacity)
 
@@ -283,7 +283,7 @@ Description: Specifies the maximum number of throughput units when Auto Inflate 
 
 Type: `number`
 
-Default: `null`
+Default: `1`
 
 ### <a name="input_network_rulesets"></a> [network\_rulesets](#input\_network\_rulesets)
 
