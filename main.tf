@@ -28,7 +28,7 @@ resource "azurerm_eventhub_namespace" "this" {
   tags                          = var.tags
 
   dynamic "identity" {
-    for_each = var.managed_identities != {} ? { this = var.managed_identities } : {}
+    for_each = local.managed_identities
 
     content {
       type         = identity.value.system_assigned && length(identity.value.user_assigned_resource_ids) > 0 ? "SystemAssigned, UserAssigned" : length(identity.value.user_assigned_resource_ids) > 0 ? "UserAssigned" : "SystemAssigned"
@@ -59,13 +59,6 @@ resource "azurerm_eventhub_namespace" "this" {
           subnet_id                                       = virtual_network_rule.value.subnet_id
         }
       }
-    }
-  }
-
-  lifecycle {
-    precondition {
-      condition     = var.maximum_throughput_units == null && !var.auto_inflate_enabled
-      error_message = "Cannot set MaximumThroughputUnits property if AutoInflate is not enabled."
     }
   }
 }

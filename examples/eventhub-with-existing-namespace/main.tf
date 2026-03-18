@@ -27,10 +27,12 @@ resource "azurerm_resource_group" "this" {
 }
 
 resource "azurerm_eventhub_namespace" "this" {
-  location            = azurerm_resource_group.this.location
-  name                = module.naming.eventhub.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-  sku                 = "Standard"
+  location                 = azurerm_resource_group.this.location
+  name                     = module.naming.eventhub.name_unique
+  resource_group_name      = azurerm_resource_group.this.name
+  sku                      = "Standard"
+  auto_inflate_enabled     = true
+  maximum_throughput_units = 1
 }
 
 locals {
