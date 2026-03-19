@@ -74,7 +74,7 @@ Description: Is Auto Inflate enabled for the EventHub Namespace?
 
 Type: `bool`
 
-Default: `false`
+Default: `true`
 
 ### <a name="input_capacity"></a> [capacity](#input\_capacity)
 
@@ -279,7 +279,7 @@ Default: `{}`
 
 ### <a name="input_maximum_throughput_units"></a> [maximum\_throughput\_units](#input\_maximum\_throughput\_units)
 
-Description: Specifies the maximum number of throughput units when Auto Inflate is Enabled. Valid values range from 1 - 20.
+Description: Specifies the maximum number of throughput units when Auto Inflate is Enabled. Valid values range from 1 - 40. When auto\_inflate\_enabled is true, this will default to max(2, capacity + 1) if not specified.
 
 Type: `number`
 

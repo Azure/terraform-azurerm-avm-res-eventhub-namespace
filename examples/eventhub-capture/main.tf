@@ -10,8 +10,13 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
   skip_provider_registration = true
+  storage_use_azuread        = true
 }
 
 
@@ -31,11 +36,13 @@ resource "azurerm_resource_group" "this" {
 data "azurerm_client_config" "this" {}
 
 resource "azurerm_storage_account" "this" {
-  account_replication_type = "ZRS"
-  account_tier             = "Standard"
-  location                 = azurerm_resource_group.this.location
-  name                     = module.naming.storage_account.name_unique
-  resource_group_name      = azurerm_resource_group.this.name
+  account_replication_type        = "ZRS"
+  account_tier                    = "Standard"
+  location                        = azurerm_resource_group.this.location
+  name                            = module.naming.storage_account.name_unique
+  resource_group_name             = azurerm_resource_group.this.name
+  default_to_oauth_authentication = true
+  shared_access_key_enabled       = false
 }
 
 resource "azurerm_storage_container" "this" {
@@ -78,10 +85,8 @@ module "event_hub" {
   location            = azurerm_resource_group.this.location
   name                = module.naming.eventhub_namespace.name_unique
   resource_group_name = azurerm_resource_group.this.name
-  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
-  # ...
-  enable_telemetry = var.enable_telemetry
-  event_hubs       = local.event_hubs
+  enable_telemetry    = var.enable_telemetry
+  event_hubs          = local.event_hubs
 
   depends_on = [
     azurerm_role_assignment.this

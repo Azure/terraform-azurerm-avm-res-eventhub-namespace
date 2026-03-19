@@ -36,12 +36,11 @@ resource "azurerm_resource_group" "this" {
 module "event_hub" {
   source = "../../"
 
-  location            = azurerm_resource_group.this.location
-  name                = module.naming.eventhub_namespace.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
-  # ...
-  enable_telemetry = false
+  location             = azurerm_resource_group.this.location
+  name                 = module.naming.eventhub_namespace.name_unique
+  resource_group_name  = azurerm_resource_group.this.name
+  auto_inflate_enabled = true
+  enable_telemetry     = false
 }
 ```
 
