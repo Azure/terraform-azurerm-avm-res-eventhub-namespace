@@ -26,13 +26,17 @@ resource "azurerm_resource_group" "this" {
   name     = module.naming.resource_group.name_unique
 }
 
+# This example demonstrates deploying an Event Hub namespace without any managed identity.
+# This is a valid scenario where no identity configuration is needed.
+# The module should correctly handle managed_identities = {} without creating an identity block.
 module "event_hub" {
   source = "../../"
 
   location            = azurerm_resource_group.this.location
   name                = module.naming.eventhub_namespace.name_unique
   resource_group_name = azurerm_resource_group.this.name
-  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
-  # ...
-  enable_telemetry = false
+  enable_telemetry    = false
+  # Explicitly passing empty object to test the "no identity" scenario
+  # This should NOT create any identity block on the Event Hub namespace
+  managed_identities = {}
 }
