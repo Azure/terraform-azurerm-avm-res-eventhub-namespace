@@ -1,9 +1,9 @@
 resource "azurerm_eventhub" "this" {
   for_each = var.event_hubs
 
-  message_retention   = each.value.message_retention
   name                = each.key
   partition_count     = each.value.partition_count
+  message_retention   = each.value.message_retention
   namespace_name      = try(data.azurerm_eventhub_namespace.this[0].name, azurerm_eventhub_namespace.this[0].name)
   resource_group_name = var.resource_group_name
   status              = each.value.status
@@ -40,4 +40,3 @@ resource "azurerm_role_assignment" "event_hubs" {
   role_definition_name                   = strcontains(lower(each.value.role_assignment.role_definition_id_or_name), lower(local.role_definition_resource_substring)) ? null : each.value.role_assignment.role_definition_id_or_name
   skip_service_principal_aad_check       = each.value.role_assignment.skip_service_principal_aad_check
 }
-

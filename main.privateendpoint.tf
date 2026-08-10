@@ -15,6 +15,7 @@ resource "azurerm_private_endpoint" "this" {
     private_connection_resource_id = azurerm_eventhub_namespace.this[0].id
     subresource_names              = ["namespace"] # map to each.value.subresource_name if there are multiple services.
   }
+
   dynamic "ip_configuration" {
     for_each = each.value.ip_configurations
 
@@ -25,6 +26,7 @@ resource "azurerm_private_endpoint" "this" {
       subresource_name   = "namespace" # map to each.value.subresource_name if there are multiple services.
     }
   }
+
   dynamic "private_dns_zone_group" {
     for_each = length(each.value.private_dns_zone_resource_ids) > 0 ? ["this"] : []
 
@@ -52,6 +54,7 @@ resource "azurerm_private_endpoint" "this_unmanaged_dns_zone_groups" {
     private_connection_resource_id = azurerm_eventhub_namespace.this[0].id
     subresource_names              = ["namespace"] # map to each.value.subresource_name if there are multiple services.
   }
+
   dynamic "ip_configuration" {
     for_each = each.value.ip_configurations
 
@@ -62,6 +65,7 @@ resource "azurerm_private_endpoint" "this_unmanaged_dns_zone_groups" {
       subresource_name   = "namespace" # map to each.value.subresource_name if there are multiple services.
     }
   }
+
   dynamic "private_dns_zone_group" {
     for_each = length(each.value.private_dns_zone_resource_ids) > 0 ? ["this"] : []
 

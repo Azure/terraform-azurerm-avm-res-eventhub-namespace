@@ -14,27 +14,17 @@ data "azurerm_eventhub_namespace" "this" {
 resource "azurerm_eventhub_namespace" "this" {
   count = var.existing_parent_resource == null ? 1 : 0
 
-  location                      = coalesce(var.location, local.resource_group_location)
-  name                          = var.name # calling code must supply the name
-  resource_group_name           = var.resource_group_name
-  sku                           = var.sku
-  auto_inflate_enabled          = var.auto_inflate_enabled
-  capacity                      = var.capacity
-  dedicated_cluster_id          = var.dedicated_cluster_id
-  local_authentication_enabled  = var.local_authentication_enabled
-  maximum_throughput_units      = var.maximum_throughput_units
-  minimum_tls_version           = 1.2
-  public_network_access_enabled = var.public_network_access_enabled
-  tags                          = var.tags
+  location                     = coalesce(var.location, local.resource_group_location)
+  name                         = var.name # calling code must supply the name
+  resource_group_name          = var.resource_group_name
+  sku                          = var.sku
+  auto_inflate_enabled         = var.auto_inflate_enabled
+  capacity                     = var.capacity
+  dedicated_cluster_id         = var.dedicated_cluster_id
+  local_authentication_enabled = var.local_authentication_enabled
+  maximum_throughput_units     = var.maximum_throughput_units
+  minimum_tls_version          = 1.2
 
-  dynamic "identity" {
-    for_each = var.managed_identities != {} ? { this = var.managed_identities } : {}
-
-    content {
-      type         = identity.value.system_assigned && length(identity.value.user_assigned_resource_ids) > 0 ? "SystemAssigned, UserAssigned" : length(identity.value.user_assigned_resource_ids) > 0 ? "UserAssigned" : "SystemAssigned"
-      identity_ids = identity.value.user_assigned_resource_ids
-    }
-  }
   dynamic "network_rulesets" {
     for_each = var.network_rulesets != null ? { this = var.network_rulesets } : {}
 
@@ -59,6 +49,17 @@ resource "azurerm_eventhub_namespace" "this" {
           subnet_id                                       = virtual_network_rule.value.subnet_id
         }
       }
+    }
+  }
+  public_network_access_enabled = var.public_network_access_enabled
+  tags                          = var.tags
+
+  dynamic "identity" {
+    for_each = var.managed_identities != {} ? { this = var.managed_identities } : {}
+
+    content {
+      type         = identity.value.system_assigned && length(identity.value.user_assigned_resource_ids) > 0 ? "SystemAssigned, UserAssigned" : length(identity.value.user_assigned_resource_ids) > 0 ? "UserAssigned" : "SystemAssigned"
+      identity_ids = identity.value.user_assigned_resource_ids
     }
   }
 
