@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/azure-verified-modules-tools/main/src/Avm.Authoring/Resources/Schemas/v1/avm-module-metadata.schema.json",
+  "moduleDisplayName": "Event Hub Namespace",
+  "moduleDescription": "AVM Resource Module for Event Hub Namespace",
+  "canonicalType": "Microsoft.EventHub/namespaces",
+  "owners": [
+    "rcavaturu"
+  ],
+  "telemetryIdPrefix": "46d3xtrf.res.b459069"
+}
