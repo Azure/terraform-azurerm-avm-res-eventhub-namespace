@@ -3,8 +3,10 @@ mock_provider "azurerm" {}
 mock_provider "modtm" {}
 mock_provider "random" {}
 
-# Required module inputs for tests
 variables {
+  existing_parent_resource = {
+    name = "test-namespace"
+  }
   location            = "eastus"
   name                = "test-namespace"
   resource_group_name = "rg-test"
@@ -12,7 +14,10 @@ variables {
 
 run "null_allowed" {
   command = apply
-  # default: maximum_throughput_units is null, should be accepted
+
+  variables {
+    existing_parent_resource = null
+  }
 }
 
 run "zero_rejected" {
