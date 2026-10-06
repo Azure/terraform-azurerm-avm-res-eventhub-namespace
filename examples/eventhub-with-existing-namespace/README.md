@@ -9,9 +9,21 @@ terraform {
   required_version = ">= 1.3.0"
 
   required_providers {
+    azapi = {
+      source  = "Azure/azapi"
+      version = "~> 2.12"
+    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 4.0"
+    }
+    modtm = {
+      source  = "Azure/modtm"
+      version = "~> 0.3"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.6"
     }
   }
 }
@@ -34,10 +46,13 @@ resource "azurerm_resource_group" "this" {
 }
 
 resource "azurerm_eventhub_namespace" "this" {
-  location            = azurerm_resource_group.this.location
-  name                = module.naming.eventhub.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-  sku                 = "Standard"
+  location                 = azurerm_resource_group.this.location
+  name                     = module.naming.eventhub.name_unique
+  resource_group_name      = azurerm_resource_group.this.name
+  sku                      = "Standard"
+  auto_inflate_enabled     = true
+  maximum_throughput_units = 20
+  minimum_tls_version      = "1.2"
 }
 
 locals {
@@ -54,6 +69,12 @@ locals {
 
 module "event_hub" {
   source = "../../"
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    modtm   = modtm
+    random  = random
+  }
 
   location            = azurerm_resource_group.this.location
   name                = module.naming.eventhub_namespace.name_unique
@@ -73,7 +94,13 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.3.0)
 
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.12)
+
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
+
+- <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
+
+- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6)
 
 ## Resources
 
