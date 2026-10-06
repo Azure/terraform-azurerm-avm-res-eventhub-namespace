@@ -103,6 +103,21 @@ variable "existing_parent_resource" {
   description = "If supplied, this event hub namespace resource will be used by child resources (e.g. event hubs), instead of creating a new event hub namespace."
 }
 
+variable "ignore_body_changes" {
+  type = object({
+    authorization_locks            = optional(list(string), [])
+    authorization_role_assignments = optional(list(string), [])
+  })
+  default     = {}
+  description = <<DESCRIPTION
+Body-relative paths to ignore for each AzAPI resource. Paths use dot notation. Changes take effect only after apply. Ignored configuration is not sent to Azure until the path is removed. Individual list indices cannot be targeted.
+
+- `authorization_locks` - Paths ignored on private endpoint locks.
+- `authorization_role_assignments` - Paths ignored on private endpoint role assignments.
+DESCRIPTION
+  nullable    = false
+}
+
 variable "lock" {
   type = object({
     kind = string
@@ -252,6 +267,39 @@ variable "private_endpoints_manage_dns_zone_group" {
   nullable    = false
 }
 
+variable "resource_types" {
+  type = object({
+    authorization_locks            = optional(string, "Microsoft.Authorization/locks@2020-05-01")
+    authorization_role_assignments = optional(string, "Microsoft.Authorization/roleAssignments@2022-04-01")
+  })
+  default     = {}
+  description = <<DESCRIPTION
+AzAPI resource types and API versions used by the module.
+
+- `authorization_locks` - Resource type and API version for private endpoint locks.
+- `authorization_role_assignments` - Resource type and API version for private endpoint role assignments.
+DESCRIPTION
+  nullable    = false
+}
+
+variable "retry" {
+  type = object({
+    error_message_regex  = optional(list(string))
+    interval_seconds     = optional(number)
+    max_interval_seconds = optional(number)
+  })
+  default     = null
+  description = <<DESCRIPTION
+Retry configuration applied to every supported AzAPI resource declared by the module and its applicable submodules. Defaults to `null` (no custom retry).
+
+- `error_message_regex`  - (Optional) A list of regex patterns matching error messages that trigger a retry.
+- `interval_seconds`     - (Optional) Initial interval between retries in seconds.
+- `max_interval_seconds` - (Optional) Maximum interval between retries in seconds.
+
+See <https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource#retry> for full semantics.
+DESCRIPTION
+}
+
 variable "role_assignments" {
   type = map(object({
     role_definition_id_or_name             = string
@@ -286,4 +334,22 @@ variable "tags" {
   type        = map(string)
   default     = null
   description = "(Optional) Tags of the resource."
+}
+
+variable "timeouts" {
+  type = object({
+    create = optional(string)
+    read   = optional(string)
+    update = optional(string)
+    delete = optional(string)
+  })
+  default     = null
+  description = <<DESCRIPTION
+Default per-operation timeouts applied to every supported AzAPI resource declared by the module and its applicable submodules. Defaults to `null` (provider defaults). Each value is a Go duration string (e.g. `30m`, `1h`).
+
+- `create` - (Optional) Timeout for create operations.
+- `read`   - (Optional) Timeout for read operations.
+- `update` - (Optional) Timeout for update operations.
+- `delete` - (Optional) Timeout for delete operations.
+DESCRIPTION
 }

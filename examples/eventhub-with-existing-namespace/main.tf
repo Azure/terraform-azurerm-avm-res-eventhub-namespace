@@ -2,21 +2,9 @@ terraform {
   required_version = ">= 1.3.0"
 
   required_providers {
-    azapi = {
-      source  = "Azure/azapi"
-      version = "~> 2.12"
-    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 4.0"
-    }
-    modtm = {
-      source  = "Azure/modtm"
-      version = "~> 0.3"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.6"
     }
   }
 }
@@ -62,12 +50,6 @@ locals {
 
 module "event_hub" {
   source = "../../"
-  providers = {
-    azapi   = azapi
-    azurerm = azurerm
-    modtm   = modtm
-    random  = random
-  }
 
   location            = azurerm_resource_group.this.location
   name                = module.naming.eventhub_namespace.name_unique
