@@ -4,6 +4,8 @@
 
 This deploys two example event hubs, illustrating role assignments.
 
+The deployment identity needs `Storage Blob Data Contributor` at storage-account scope to enable Capture; container-scoped access is insufficient. This example creates that assignment before the event hubs. See [Capture storage permissions](https://learn.microsoft.com/azure/event-hubs/event-hubs-capture-overview#azure-storage-account-as-a-destination).
+
 ```hcl
 terraform {
   required_version = ">= 1.3.0"
@@ -52,7 +54,7 @@ resource "azurerm_storage_container" "this" {
 
 resource "azurerm_role_assignment" "this" {
   principal_id         = data.azurerm_client_config.this.object_id
-  scope                = azurerm_storage_container.this.resource_manager_id
+  scope                = azurerm_storage_account.this.id
   role_definition_name = "Storage Blob Data Contributor"
 }
 
@@ -106,8 +108,10 @@ module "event_hub" {
   resource_group_name = azurerm_resource_group.this.name
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
-  enable_telemetry = var.enable_telemetry
-  event_hubs       = local.event_hubs
+  auto_inflate_enabled     = true
+  enable_telemetry         = var.enable_telemetry
+  event_hubs               = local.event_hubs
+  maximum_throughput_units = 20
 
   depends_on = [
     azurerm_role_assignment.this

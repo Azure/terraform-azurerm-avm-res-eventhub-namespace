@@ -41,7 +41,9 @@ module "event_hub" {
   resource_group_name = azurerm_resource_group.this.name
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
-  enable_telemetry = var.enable_telemetry
+  auto_inflate_enabled     = true
+  enable_telemetry         = var.enable_telemetry
+  maximum_throughput_units = 20
 }
 ```
 
