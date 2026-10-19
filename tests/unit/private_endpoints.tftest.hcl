@@ -9,6 +9,11 @@ mock_provider "azapi" {
       }
     }
   }
+  mock_data "azapi_client_config" {
+    defaults = {
+      subscription_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000"
+    }
+  }
 }
 
 mock_provider "azurerm" {
@@ -30,8 +35,6 @@ mock_provider "azurerm" {
     }
   }
 }
-
-mock_provider "modtm" {}
 
 mock_provider "random" {
   mock_resource "random_uuid" {
@@ -104,6 +107,11 @@ run "no_private_endpoints" {
     )
     error_message = "An empty endpoint map must not create endpoints, locks, or role assignments."
   }
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }
 
 run "managed_dns_defaults" {
@@ -135,6 +143,11 @@ run "managed_dns_defaults" {
     )
     error_message = "Omitted endpoint options must preserve namespace, resource-group, and managed-DNS defaults."
   }
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }
 
 run "unmanaged_dns_defaults" {
@@ -164,6 +177,11 @@ run "unmanaged_dns_defaults" {
       one(output.private_endpoints["test"].ip_configuration).subresource_name == "namespace"
     )
     error_message = "Unmanaged DNS must preserve the same omitted subresource and member defaults as managed DNS."
+  }
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
   }
 }
 
@@ -212,6 +230,11 @@ run "managed_dns_overrides" {
     )
     error_message = "Private-endpoint role assignments must preserve names, resolved roles, and optional properties."
   }
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }
 
 run "unmanaged_dns_existing_namespace" {
@@ -235,6 +258,11 @@ run "unmanaged_dns_existing_namespace" {
       azapi_resource.private_endpoint_role_assignments["test-reader"].parent_id == azurerm_private_endpoint.this_unmanaged_dns_zone_groups["test"].id
     )
     error_message = "Unmanaged DNS must support existing namespaces and attach every extension to the selected endpoint."
+  }
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
   }
 }
 
@@ -265,6 +293,11 @@ run "legacy_resource_group_name_and_generated_names" {
       azapi_resource.private_endpoint_role_assignments["test-reader"].body.properties.roleDefinitionId == var.private_endpoints["test"].role_assignments["reader"].role_definition_id_or_name
     )
     error_message = "Legacy resource-group names, role definition IDs, and generated extension names must work."
+  }
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
   }
 }
 
@@ -315,6 +348,11 @@ run "azapi_controls" {
     )
     error_message = "Configured ignored-body paths are write-only and must not appear in Terraform state."
   }
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }
 
 run "different_subscription_rejected" {
@@ -330,6 +368,11 @@ run "different_subscription_rejected" {
   }
 
   expect_failures = [azurerm_private_endpoint.this]
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }
 
 run "invalid_subnet_rejected" {
@@ -342,6 +385,11 @@ run "invalid_subnet_rejected" {
   }
 
   expect_failures = [var.private_endpoints]
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }
 
 run "invalid_dns_zone_rejected" {
@@ -357,6 +405,11 @@ run "invalid_dns_zone_rejected" {
   }
 
   expect_failures = [var.private_endpoints]
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }
 
 run "invalid_security_group_rejected" {
@@ -374,6 +427,11 @@ run "invalid_security_group_rejected" {
   }
 
   expect_failures = [var.private_endpoints]
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }
 
 run "invalid_delegated_identity_rejected" {
@@ -395,4 +453,9 @@ run "invalid_delegated_identity_rejected" {
   }
 
   expect_failures = [var.private_endpoints]
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }

@@ -1,7 +1,8 @@
 module "private_endpoint_interfaces" {
   source  = "Azure/avm-utl-interfaces/azure"
-  version = "0.7.0"
+  version = "0.9.0"
 
+  location                         = var.location
   enable_telemetry                 = var.enable_telemetry
   private_endpoints                = var.private_endpoints
   private_endpoints_scope          = local.event_hub_namespace_resource_id
