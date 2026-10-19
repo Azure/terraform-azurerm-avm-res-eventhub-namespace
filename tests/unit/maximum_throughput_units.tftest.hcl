@@ -1,6 +1,13 @@
-mock_provider "azapi" {}
+mock_provider "azapi" {
+  mock_data "azapi_client_config" {
+    defaults = {
+      subscription_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000"
+    }
+  }
+}
+
 mock_provider "azurerm" {}
-mock_provider "modtm" {}
+
 mock_provider "random" {}
 
 variables {
@@ -17,6 +24,11 @@ run "null_allowed" {
     condition     = !azurerm_eventhub_namespace.this[0].auto_inflate_enabled && var.maximum_throughput_units == null
     error_message = "The default namespace must retain disabled auto-inflate and a null maximum."
   }
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }
 
 run "zero_rejected" {
@@ -28,6 +40,11 @@ run "zero_rejected" {
   expect_failures = [
     var.maximum_throughput_units
   ]
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }
 
 run "one_allowed" {
@@ -40,6 +57,11 @@ run "one_allowed" {
   assert {
     condition     = azurerm_eventhub_namespace.this[0].auto_inflate_enabled && azurerm_eventhub_namespace.this[0].maximum_throughput_units == 1
     error_message = "Namespace creation must support auto-inflate with a maximum of 1."
+  }
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
   }
 }
 
@@ -54,6 +76,11 @@ run "twenty_allowed" {
     condition     = azurerm_eventhub_namespace.this[0].auto_inflate_enabled && azurerm_eventhub_namespace.this[0].maximum_throughput_units == 20
     error_message = "Namespace creation must support auto-inflate with a maximum of 20."
   }
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }
 
 run "twentyone_rejected" {
@@ -66,6 +93,11 @@ run "twentyone_rejected" {
   expect_failures = [
     var.maximum_throughput_units
   ]
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }
 
 run "maximum_without_auto_inflate_rejected" {
@@ -77,6 +109,11 @@ run "maximum_without_auto_inflate_rejected" {
   }
 
   expect_failures = [azurerm_eventhub_namespace.this]
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }
 
 run "auto_inflate_without_maximum_rejected" {
@@ -88,4 +125,9 @@ run "auto_inflate_without_maximum_rejected" {
   }
 
   expect_failures = [azurerm_eventhub_namespace.this]
+  providers = {
+    azapi   = azapi
+    azurerm = azurerm
+    random  = random
+  }
 }
