@@ -11,6 +11,7 @@ terraform {
   required_version = ">= 1.3.0"
 
   required_providers {
+    # tflint-ignore: terraform_unused_required_providers
     azapi = {
       source  = "Azure/azapi"
       version = "~> 2.12"
@@ -86,9 +87,6 @@ locals {
 
 module "event_hub" {
   source = "../../"
-  providers = {
-    azapi = azapi
-  }
 
   location            = azurerm_resource_group.this.location
   name                = module.naming.eventhub_namespace.name_unique
